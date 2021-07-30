@@ -41,6 +41,14 @@
 #include <mt-plat/mtk_ram_console.h>
 #endif
 
+#ifdef CONFIG_SEC_DEBUG
+#include <linux/sec_debug.h>
+#endif
+
+#ifdef CONFIG_BOEFFLA_WL_BLOCKER
+void pm_print_active_wakeup_sources(void);
+#endif
+
 typedef int (*pm_callback_t)(struct device *);
 
 /*
