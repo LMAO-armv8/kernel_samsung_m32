@@ -171,6 +171,7 @@ endif
 KBUILD_DTBS	:= dtbs
 
 KBUILD_DTBO_MTK_IMG := dtbo_m32.img
+KBUILD_DTB_MTK_IMG := dtb_m32.img
 
 all:	Image.gz $(KBUILD_DTBS) $(subst $\",,$(CONFIG_BUILD_ARM64_APPENDED_KERNEL_IMAGE_NAME))
 
@@ -208,6 +209,11 @@ $(KBUILD_DTBO_MTK_IMG): dtbs
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
 all: $(KBUILD_DTBO_MTK_IMG)
+
+$(KBUILD_DTB_MTK_IMG): dtbs
+	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+
+all: $(KBUILD_DTB_MTK_IMG)
 
 PHONY += vdso_install
 vdso_install:
