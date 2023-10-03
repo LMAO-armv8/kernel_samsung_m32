@@ -131,6 +131,7 @@ static ssize_t sel_read_enforce(struct file *filp, char __user *buf,
 	return simple_read_from_buffer(buf, count, ppos, tmpbuf, length);
 }
 
+
 #ifdef CONFIG_SECURITY_SELINUX_DEVELOP
 static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 				 size_t count, loff_t *ppos)
@@ -157,30 +158,50 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	if (sscanf(page, "%d", &new_value) != 1)
 		goto out;
 
-	new_value = !!new_value;
-
-	old_value = enforcing_enabled(state);
 
 // [ SEC_SELINUX_PORTING_COMMON
-#ifdef CONFIG_ALWAYS_ENFORCE
-	// If build is user build and enforce option is set, selinux is always enforcing
+#ifdef CONFIG_SECURITY_SELINUX_ALWAYS_ENFORCE
+	// If always enforce option is set, selinux is always enforcing
 	new_value = 1;
-        length = avc_has_perm(&selinux_state,
-				      current_sid(), SECINITSID_SECURITY,
-				      SECCLASS_SECURITY, SECURITY__SETENFORCE,
-				      NULL);
+
+	old_value = enforcing_enabled(state);
+	length = avc_has_perm(&selinux_state,
+			current_sid(), SECINITSID_SECURITY,
+			SECCLASS_SECURITY, SECURITY__SETENFORCE,
+			NULL);
 	audit_log(current->audit_context, GFP_KERNEL, AUDIT_MAC_STATUS,
-			"enforcing=%d old_enforcing=%d auid=%u ses=%u"
-			" enabled=%d old-enabled=%d lsm=selinux res=1",
-			new_value, selinux_enforcing,
-			from_kuid(&init_user_ns, audit_get_loginuid(current)),
-			audit_get_sessionid(current),
-			selinux_enabled, selinux_enabled);
-        enforcing_set(state, new_value);
-	avc_ss_reset(state->avc, 0);
+		"config_always_enforce - true; enforcing=%d old_enforcing=%d auid=%u ses=%u",
+		new_value, selinux_enforcing, // SEC_SELINUX_PORTING_COMMON Change to use RKP 
+		from_kuid(&init_user_ns, audit_get_loginuid(current)),
+		audit_get_sessionid(current));
+	enforcing_set(state, new_value);
+	selinux_enforcing = new_value;
+	if (new_value)
+		avc_ss_reset(state->avc, 0);
+	selnl_notify_setenforce(new_value);
+	selinux_status_update_setenforce(state, new_value);
+#elif defined(CONFIG_SECURITY_SELINUX_ALWAYS_PERMISSIVE)
+	// If always permissive option is set, selinux is always permissive
+	new_value = 0;
+
+	old_value = enforcing_enabled(state);
+	length = avc_has_perm(&selinux_state,
+			current_sid(), SECINITSID_SECURITY,
+			SECCLASS_SECURITY, SECURITY__SETENFORCE,
+			NULL);
+	audit_log(current->audit_context, GFP_KERNEL, AUDIT_MAC_STATUS,
+		"config_always_permissive - true; enforcing=%d old_enforcing=%d auid=%u ses=%u",
+		new_value, selinux_enforcing, // SEC_SELINUX_PORTING_COMMON Change to use RKP 
+		from_kuid(&init_user_ns, audit_get_loginuid(current)),
+		audit_get_sessionid(current));
+	enforcing_set(state, new_value);
+	selinux_enforcing = new_value;
 	selnl_notify_setenforce(new_value);
 	selinux_status_update_setenforce(state, new_value);
 #else
+	new_value = !!new_value;
+
+	old_value = enforcing_enabled(state);
 	if (new_value != selinux_enforcing) { // SEC_SELINUX_PORTING_COMMON Change to use RKP
 		length = avc_has_perm(&selinux_state,
 				      current_sid(), SECINITSID_SECURITY,
@@ -189,12 +210,10 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 		if (length)
 			goto out;
 		audit_log(current->audit_context, GFP_KERNEL, AUDIT_MAC_STATUS,
-			"enforcing=%d old_enforcing=%d auid=%u ses=%u"
-			" enabled=%d old-enabled=%d lsm=selinux res=1",
-				new_value, selinux_enforcing, // SEC_SELINUX_PORTING_COMMON Change to use RKP 
+			"enforcing=%d old_enforcing=%d auid=%u ses=%u",
+			new_value, selinux_enforcing,
 			from_kuid(&init_user_ns, audit_get_loginuid(current)),
-			audit_get_sessionid(current),
-			selinux_enabled, selinux_enabled);					 
+			audit_get_sessionid(current));
 		enforcing_set(state, new_value);
 		if (new_value)
 			avc_ss_reset(state->avc, 0);
@@ -204,8 +223,10 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 			call_lsm_notifier(LSM_POLICY_CHANGE, NULL);
 	}
 #endif
-// ] SEC_SELINUX_PORTING_COMMON					   
+// ] SEC_SELINUX_PORTING_COMMON
+
 	length = count;
+
 out:
 	kfree(page);
 	return length;
