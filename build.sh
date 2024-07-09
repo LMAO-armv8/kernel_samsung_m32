@@ -73,8 +73,8 @@ LLVM=1
 '
 
 # make ${ARGS} O=out ${DEVICE}_defconfig naz.config ${CONFIG_KSU}
-sudo make ${ARGS} O=out ${DEVICE}_defconfig
-sudo make ${ARGS} O=out -j$(nproc)
+make ${ARGS} O=out ${DEVICE}_defconfig
+make ${ARGS} O=out -j$(nproc)
 
 echo "  Cleaning Stuff"
 rm -rf AnyKernel3/Image
