@@ -1,7 +1,6 @@
 name: build
 
 on:
-
   workflow_dispatch:
   push:
 jobs:
@@ -35,6 +34,10 @@ jobs:
           echo 'Patch for glibc'
           bash <(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") --patch=glibc
           echo 'Done'
+          
+      - name: Make build.sh executable
+        run: |
+          chmod +x build.sh
 
       - name: Run build
         run: |
