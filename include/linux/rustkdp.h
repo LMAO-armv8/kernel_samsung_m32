@@ -152,7 +152,7 @@ extern inline void set_cred_subscribers(struct cred *cred, int n);
 
 // linux/cred.h
 extern inline struct cred *get_new_cred(struct cred *cred);
-extern inline void put_cred(const struct cred *_cred);
+extern void put_cred(const struct cred *_cred);
 extern void put_rocred_rcu(struct rcu_head *rcu);
 extern unsigned int kdp_get_usecount(struct cred *cred);
 
