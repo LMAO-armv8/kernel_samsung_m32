@@ -148,10 +148,10 @@ extern void __init kdp_cred_init(void);
 extern void __init kdp_do_early_param_setup(char *param, char *val);
 
 // match for kernel/cred.c function
-extern inline void set_cred_subscribers(struct cred *cred, int n);
+extern void set_cred_subscribers(struct cred *cred, int n);
 
 // linux/cred.h
-extern inline struct cred *get_new_cred(struct cred *cred);
+extern struct cred *get_new_cred(struct cred *cred);
 extern void put_cred(const struct cred *_cred);
 extern void put_rocred_rcu(struct rcu_head *rcu);
 extern unsigned int kdp_get_usecount(struct cred *cred);
@@ -160,7 +160,7 @@ extern struct cred *prepare_ro_creds(struct cred *old, int kdp_cmd, u64 p);
 
 extern int security_integrity_current(void);
 extern void kdp_assign_pgd(struct task_struct *p);
-extern inline int kdp_restrict_fork(struct filename *path);
+extern int kdp_restrict_fork(struct filename *path);
 extern void kdp_free_security(unsigned long tsec);
 
 extern bool is_kdp_protect_addr(unsigned long addr);
@@ -227,10 +227,10 @@ extern void __init kdp_init_mount_tree(struct vfsmount *mnt);
 
 extern int kdp_mnt_alloc_vfsmount(struct mount *mnt);
 extern void kdp_set_ns_data(struct vfsmount *mnt,void *data);
-inline extern void kdp_set_mnt_root_sb(struct vfsmount *mnt, struct dentry *mnt_root, struct super_block *mnt_sb);
-inline extern void kdp_set_mnt_flags(struct vfsmount *mnt, int flags);
-inline extern void kdp_clear_mnt_flags(struct vfsmount *mnt,int flags);
-inline extern void kdp_assign_mnt_flags(struct vfsmount *mnt, int flags);
+extern void kdp_set_mnt_root_sb(struct vfsmount *mnt, struct dentry *mnt_root, struct super_block *mnt_sb);
+extern void kdp_set_mnt_flags(struct vfsmount *mnt, int flags);
+extern void kdp_clear_mnt_flags(struct vfsmount *mnt,int flags);
+extern void kdp_assign_mnt_flags(struct vfsmount *mnt, int flags);
 extern int kdp_do_new_mount(struct vfsmount *mnt, struct path *path);
 
 extern bool is_kdp_vfsmnt_cache(unsigned long addr);

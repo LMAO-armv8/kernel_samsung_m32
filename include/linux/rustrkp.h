@@ -94,10 +94,10 @@ extern void __init rkp_init(void);
 extern void rkp_deferred_init(void);
 extern void rkp_robuffer_init(void);
 
-extern inline phys_addr_t rkp_ro_alloc_phys(void);
-extern inline void *rkp_ro_alloc(void);
-extern inline void rkp_ro_free(void *free_addr);
-extern inline bool is_rkp_ro_buffer(u64 addr);
+extern phys_addr_t rkp_ro_alloc_phys(void);
+extern void *rkp_ro_alloc(void);
+extern void rkp_ro_free(void *free_addr);
+extern bool is_rkp_ro_buffer(u64 addr);
 
 #endif //__ASSEMBLY__
 #endif //_RUSTRKP_H
