@@ -94,9 +94,9 @@ $(patsubst %,$(obj)/%.gen.S, $(fw-shipped-y)): %: $(wordsize_deps)
 	$(call cmd,fwbin,$(patsubst %.gen.S,%,$@))
 $(patsubst %,$(obj)/%.gen.S, $(fw-external-y)): %: $(wordsize_deps)
 
-	$(call cmd,fwbin,$(patsubst %.gen.S,%,$@))
+	$(call cmd,fwbin,$(fwabs)/$(patsubst $(obj)/%.gen.S,%,$@))
 # The .o files depend on the binaries directly; the .S files don't.
-$(patsubst %,$(obj)/%.gen.o, $(fw-external-y)): %.gen.o: %
+$(patsubst %,$(obj)/%.gen.o, $(fw-external-y)): $(obj)/%.gen.o: $(fwdir)/%
 
 obj-y				 += $(patsubst %,%.gen.o, $(fw-external-y))
 
