@@ -11,7 +11,7 @@ jobs:
       matrix:
         device: [m32]
         ksu: [1]
-    name: "🚧 Build for ${{matrix.device}} KSU=${{matrix.ksu}}"
+    name: "🚧 Build for ${{matrix.device}} 
 
     steps:
       - name: Checkout source
@@ -26,19 +26,13 @@ jobs:
       - name: Setup Toolchains
         run: |
           sudo apt update
-          sudo apt install bison flex libssl-dev libarchive-tools -y
-          mkdir -p toolchain
-          cd toolchain
-          echo 'Download antman and sync'
-          bash <(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") -S=05012024
-          echo 'Patch for glibc'
-          bash <(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") --patch=glibc
+          sudo apt install bison flex libssl-dev libarchive-tools gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
           echo 'Done'
           
-      - name: Make build.sh executable
+      - name: Make build_kernel.sh executable
         run: |
-          chmod +x build.sh
+          chmod +x build_kernel.sh
 
       - name: Run build
         run: |
-          DEVICE=${{matrix.device}} KSU=${{matrix.ksu}} ./build.sh
+          ./build_kernel.sh
