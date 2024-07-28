@@ -3,6 +3,7 @@ name: build
 on:
   workflow_dispatch:
   push:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,7 +12,7 @@ jobs:
       matrix:
         device: [m32]
         ksu: [1]
-    name: "🚧 Build for ${{matrix.device}} 
+    name: "🚧 Build for ${{ matrix.device }}"
 
     steps:
       - name: Checkout source
@@ -26,13 +27,17 @@ jobs:
       - name: Setup Toolchains
         run: |
           sudo apt update
-          sudo apt install bison flex libssl-dev libarchive-tools gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
-          echo 'Done'
-          
+          sudo apt install -y \
+            bison \
+            flex \
+            libssl-dev \
+            libarchive-tools \
+            gcc-aarch64-linux-gnu \
+            g++-aarch64-linux-gnu
+          echo 'Toolchains setup completed'
+
       - name: Make build_kernel.sh executable
-        run: |
-          chmod +x build_kernel.sh
+        run: chmod +x build_kernel.sh
 
       - name: Run build
-        run: |
-          ./build_kernel.sh
+        run: ./build_kernel.sh
